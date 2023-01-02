@@ -1,5 +1,19 @@
 #!/bin/bash
  
+if ! test -z "$ID";then
+	sed "s/c2f55f35-4625-4703-a38e-b218bdf0e72a/$ID/" /etc/xray/config.json
+fi
+
+if ! test -z "$WS_PATH";then
+	sed "s/c077651db84bcea/$WS_PATH/" /etc/xray/config.json
+	sed "s/c077651db84bcea/$WS_PATH/" /etc/nginx/conf.d/default.conf
+fi
+
+#if test -z "$CONFIG_URL";then
+
+#fi
+
+
 # start 1
 #nginx -g daemon off;  > /var/log/start1.log 2>&1 &
 /docker-entrypoint.sh nginx -g "daemon off;"  &

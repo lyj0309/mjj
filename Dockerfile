@@ -4,7 +4,6 @@ WORKDIR /root
 
 #RUN rm -rf /etc/nginx/conf.d 
 ADD conf.d /etc/nginx/conf.d
-
 #COPY  sources.list /etc/apt/sources.list     
 #RUN apt update && apt install wget procps -y
 
@@ -17,6 +16,7 @@ RUN mkdir -p /var/log/xray /usr/share/xray \
 	&& /root/xray.sh \
 ENV TZ=Asia/Shanghai
 
+ADD web ./web
 
 ADD run.sh /run.sh
 RUN chmod +x /run.sh
