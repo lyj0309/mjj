@@ -3,7 +3,7 @@ RUN curl -Lo /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/downl
 WORKDIR /root
 
 #RUN rm -rf /etc/nginx/conf.d 
-ADD conf.d /etc/nginx
+ADD conf.d /etc/nginx/conf.d
 
 #COPY  sources.list /etc/apt/sources.list     
 #RUN apt update && apt install wget procps -y
