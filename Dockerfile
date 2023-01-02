@@ -2,13 +2,14 @@ FROM nginx
 RUN curl -Lo /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 &&  chmod +x /usr/bin/dumb-init
 WORKDIR /root
 
-RUN rm -rf /etc/nginx/conf.d 
-COPY conf.d /etc/nginx
-    
-#RUN apt update && apt install wget 
+#RUN rm -rf /etc/nginx/conf.d 
+ADD conf.d /etc/nginx
 
-RUN mkdir /etc/xray
-COPY config.json /etc/xray/config.json
+#COPY  sources.list /etc/apt/sources.list     
+#RUN apt update && apt install wget procps -y
+
+#RUN mkdir /etc/xray
+ADD config.json /etc/xray/config.json
 
 COPY xray.sh .
 RUN mkdir -p /var/log/xray /usr/share/xray \
@@ -17,7 +18,7 @@ RUN mkdir -p /var/log/xray /usr/share/xray \
 ENV TZ=Asia/Shanghai
 
 
-COPY run.sh /run.sh
+ADD run.sh /run.sh
 RUN chmod +x /run.sh
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "/run.sh"]
 #ENTRYPOINT  ["/root/run.sh"]
