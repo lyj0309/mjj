@@ -2,7 +2,9 @@ version: "3.9"
 
 services:
   xray:
-    build: .
+    build: 
+     context: .
+       #dockerfile: Dockerfiletest
     container_name: xray
     network_mode: host
       #   environment:
