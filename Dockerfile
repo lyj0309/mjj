@@ -16,10 +16,11 @@ RUN mkdir -p /var/log/xray /usr/share/xray \
 	&& /root/xray.sh \
 ENV TZ=Asia/Shanghai
 
-ADD web ./web
+ADD web /web
 
 ADD run.sh /run.sh
 RUN chmod +x /run.sh
+EXPOSE 80
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "/run.sh"]
 #ENTRYPOINT  ["/root/run.sh"]
 #CMD  [ "/usr/bin/xray", "-config", "/etc/xray/config.json" ]

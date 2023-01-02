@@ -1,13 +1,18 @@
 #!/bin/bash
  
+if ! test -z "$PORT";then
+	sed -i "s/80/$PORT/"  /etc/nginx/conf.d/default.conf
+fi
+
 if ! test -z "$ID";then
-	sed "s/c2f55f35-4625-4703-a38e-b218bdf0e72a/$ID/" /etc/xray/config.json
+	sed -i "s/c2f55f35-4625-4703-a38e-b218bdf0e72a/$ID/" /etc/xray/config.json
 fi
 
 if ! test -z "$WS_PATH";then
-	sed "s/c077651db84bcea/$WS_PATH/" /etc/xray/config.json
-	sed "s/c077651db84bcea/$WS_PATH/" /etc/nginx/conf.d/default.conf
+	sed -i "s/c077651db84bcea/$WS_PATH/" /etc/xray/config.json
+	sed -i "s/c077651db84bcea/$WS_PATH/" /etc/nginx/conf.d/default.conf
 fi
+
 
 #if test -z "$CONFIG_URL";then
 
