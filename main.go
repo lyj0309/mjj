@@ -4,33 +4,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"os/exec"
-
-	"github.com/pretty66/websocketproxy"
 )
 
-func main() {
-	go func() {
-		cmd := exec.Command("./bin/xray", "-config", "config.json")
-		err := cmd.Run()
-		if err != nil {
-			log.Fatalf("cmd.Run() failed with %s\n", err)
-		}
-	}()
-
-	wp, err := websocketproxy.NewProxy("ws://127.0.0.1:14753/c077651db84bcea", func(r *http.Request) error {
-		// Permission to verify
-		//r.Header.Set("Cookie", "----")
-		// Source of disguise
-		//r.Header.Set("Origin", "http://82.157.123.54:9010")
-		return nil
-	})
+func xray() {
+	//./bin/xray -config config.json
+	cmd := exec.Command("./bin/xray", "-config", "config.json")
+	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
+}
+func main() {
+	go xray()
 
-	http.HandleFunc("/c077651db84bcea", wp.Proxy)
+	http.HandleFunc("/c077651db84bcea/", serveReverseProxy)
 
 	http.Handle("/", http.FileServer(http.Dir("web/")))
 
@@ -44,6 +35,25 @@ func main() {
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func serveReverseProxy(res http.ResponseWriter, req *http.Request) {
+	target := "http://127.0.0.1:14753"
+	// target := "http://google.com/c077651db84bcea"
+	// parse the url
+	url, _ := url.Parse(target)
+
+	// create the reverse proxy
+	proxy := httputil.NewSingleHostReverseProxy(url)
+
+	// Update the headers to allow for SSL redirection
+	req.URL.Host = url.Host
+	req.URL.Scheme = url.Scheme
+	req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
+	req.Host = url.Host
+
+	// Note that ServeHttp is non blocking and uses a go routine under the hood
+	proxy.ServeHTTP(res, req)
 }
 
 // indexHandler responds to requests with our greeting.
