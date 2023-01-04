@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -18,11 +19,36 @@ func xray() {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 }
+
+var upgrader = websocket.Upgrader{} // use default options
+
+func echo(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		log.Printf("recv: %s", message)
+		err = c.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
+}
+
 func main() {
 	go xray()
 
 	http.HandleFunc("/c077651db84bcea/", serveReverseProxy)
-
+	http.HandleFunc("/echo", echo)
 	http.Handle("/", http.FileServer(http.Dir("web/")))
 
 	port := os.Getenv("PORT")
