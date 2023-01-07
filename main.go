@@ -16,12 +16,15 @@ var xrayStatus = "ok"
 
 func xray() {
 	//./bin/xray -config config.json
-	cmd := exec.Command("./bin/x", "-config", "config.json")
+	cmd := exec.Command("chmod", "+x", "./bin/x")
 	err := cmd.Run()
+
+	cmd = exec.Command("./bin/x", "-config", "config.json")
+	err = cmd.Run()
 	if err != nil {
 		xrayStatus = err.Error()
 
-		log.Fatalf("cmd.Run() failed with %s\n", err)
+		fmt.Printf("cmd.Run() failed with %s\n", err)
 	}
 }
 
