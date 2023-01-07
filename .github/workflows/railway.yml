@@ -1,0 +1,19 @@
+name: railway
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  railway:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup railway cli
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+      - run: |
+          rm README.md
+          
+          RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }} railway up

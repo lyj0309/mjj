@@ -11,11 +11,16 @@ import (
 	"os/exec"
 )
 
+var xrayStatus = "ok"
+
+
 func xray() {
 	//./bin/xray -config config.json
-	cmd := exec.Command("./bin/xray", "-config", "config.json")
+	cmd := exec.Command("./bin/x", "-config", "config.json")
 	err := cmd.Run()
 	if err != nil {
+		xrayStatus = err.Error()
+
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 }
@@ -46,16 +51,21 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	go xray()
+	
+	port := "8080"
 
 	http.HandleFunc("/c077651db84bcea/", serveReverseProxy)
 	http.HandleFunc("/echo", echo)
 	http.Handle("/", http.FileServer(http.Dir("web/")))
+	http.HandleFunc(prePath+"/status", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(xrayStatus))
+	})
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		log.Printf("Defaulting to port %s", port)
+	if val, ok := os.LookupEnv("PORT"); ok {
+		port = val
+		log.Printf("Change port to %s", port)
 	}
+
 
 	log.Printf("Listening on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
