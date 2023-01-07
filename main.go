@@ -57,7 +57,7 @@ func main() {
 	http.HandleFunc("/c077651db84bcea/", serveReverseProxy)
 	http.HandleFunc("/echo", echo)
 	http.Handle("/", http.FileServer(http.Dir("web/")))
-	http.HandleFunc(prePath+"/status", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(xrayStatus))
 	})
 
