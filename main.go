@@ -28,10 +28,13 @@ func xray() {
 	}
 }
 
-var upgrader = websocket.Upgrader{} // use default options
+var upgrader = websocket.Upgrader{     CheckOrigin: func(r *http.Request) bool {
+            return true
+        }} // use default options
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
+	
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
